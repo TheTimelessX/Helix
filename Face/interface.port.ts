@@ -5,4 +5,5 @@ export interface Port {
     bought: number;
     expires: number;
     banned: boolean;
+    expired: boolean;
 }
