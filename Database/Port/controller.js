@@ -401,8 +401,11 @@ var PortController = /** @class */ (function () {
             var user, portinfo;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, exports.theUserHandler.getUserById(owner)];
+                    case 0: return [4 /*yield*/, this.ensureConnected()];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, exports.theUserHandler.getUserById(owner)];
+                    case 2:
                         user = _a.sent();
                         if (!user) {
                             return [2 /*return*/, { status: false, message: "user not found" }];
@@ -420,17 +423,17 @@ var PortController = /** @class */ (function () {
                             expired: false
                         };
                         return [4 /*yield*/, handler_1.default.collection("ports").insertOne(__assign({}, portinfo))];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.set("port:".concat(portinfo.name), JSON.stringify(portinfo))];
-                    case 3:
+                    case 4:
                         _a.sent();
                         user.port = portinfo.name;
                         return [4 /*yield*/, handler_2.default.collection("users").updateOne({ id: user.id }, { $set: { port: portinfo.name } })];
-                    case 4:
+                    case 5:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.set("user:".concat(owner), JSON.stringify(user))];
-                    case 5:
+                    case 6:
                         _a.sent();
                         return [2 /*return*/, { status: true, port: portinfo }];
                 }
@@ -442,8 +445,12 @@ var PortController = /** @class */ (function () {
             var user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, exports.theUserHandler.getUserById(owner)];
+                    case 0: // only for admins
+                    return [4 /*yield*/, this.ensureConnected()];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, exports.theUserHandler.getUserById(owner)];
+                    case 2:
                         user = _a.sent();
                         if (!user) {
                             return [2 /*return*/, { status: false, message: "user not found" }];
@@ -452,17 +459,17 @@ var PortController = /** @class */ (function () {
                             return [2 /*return*/, { status: false, message: "user has no port" }];
                         }
                         return [4 /*yield*/, handler_1.default.collection("ports").deleteOne({ owner: owner })];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.del("port:".concat(owner))];
-                    case 3:
+                    case 4:
                         _a.sent();
                         user.port = "";
                         return [4 /*yield*/, handler_2.default.collection("users").updateOne({ id: user.id }, { $set: { port: "" } })];
-                    case 4:
+                    case 5:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.set("user:".concat(owner), JSON.stringify(user))];
-                    case 5:
+                    case 6:
                         _a.sent();
                         return [2 /*return*/, { status: true }];
                 }
@@ -474,27 +481,31 @@ var PortController = /** @class */ (function () {
             var port, puser;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getPortByName(name)];
+                    case 0: // only for admins
+                    return [4 /*yield*/, this.ensureConnected()];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.getPortByName(name)];
+                    case 2:
                         port = _a.sent();
                         if (!port) {
                             return [2 /*return*/, { status: false, message: "port not found" }];
                         }
                         return [4 /*yield*/, exports.theUserHandler.getUserById(port.owner)];
-                    case 2:
+                    case 3:
                         puser = _a.sent();
                         return [4 /*yield*/, handler_1.default.collection("ports").deleteOne({ name: name })];
-                    case 3:
+                    case 4:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.del("port:".concat(name))];
-                    case 4:
+                    case 5:
                         _a.sent();
                         puser.port = "";
                         return [4 /*yield*/, handler_2.default.collection("users").updateOne({ id: puser.id }, { $set: { port: "" } })];
-                    case 5:
+                    case 6:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.set("user:".concat(puser.id), JSON.stringify(puser))];
-                    case 6:
+                    case 7:
                         _a.sent();
                         return [2 /*return*/, { status: true }];
                 }

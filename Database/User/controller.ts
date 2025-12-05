@@ -75,6 +75,7 @@ class UserController {
     }
 
     async addUser(id: number): Promise<void> {
+        await this.ensureConnected();
         const user = await this.getUserById(id);
 
         if (user){return;}

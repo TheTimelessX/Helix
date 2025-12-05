@@ -176,17 +176,20 @@ var UserController = /** @class */ (function () {
             var user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getUserById(id)];
+                    case 0: return [4 /*yield*/, this.ensureConnected()];
                     case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.getUserById(id)];
+                    case 2:
                         user = _a.sent();
                         if (user) {
                             return [2 /*return*/];
                         }
                         return [4 /*yield*/, handler_1.default.collection("users").insertOne({ id: id, coins: 0, buymode: "manual", port: "" })];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [4 /*yield*/, caching_1.Cache.set("user:".concat(id), JSON.stringify({ id: id, coins: 0, buymode: "manual", port: "" }))];
-                    case 3:
+                    case 4:
                         _a.sent();
                         return [2 /*return*/];
                 }

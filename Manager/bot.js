@@ -38,9 +38,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var TOKEN = "7669848828:AAFtHTSAJU3RsKM5fYfBDBpO67lGzDO_CEw";
 var botwallet = "TCymMoexTgT2J6UMLq7rScRdj3BjhTM6kL";
+var telegraf_1 = require("telegraf");
 var engine_1 = require("./engine");
-var TelegramBot = require("node-telegram-bot-api");
-var bot = new TelegramBot(TOKEN, { polling: true });
+var moment = require("moment-jalaali");
+moment.loadPersian({ dialect: 'persian-modern', usePersianDigits: true });
+var bot = new telegraf_1.Telegraf(TOKEN);
+var msToDays = function (ms) { return ms / (24 * 60 * 60 * 1000); };
 var translationTable = {
     'q': 'ǫ', 'w': 'ᴡ', 'e': 'ᴇ', 'r': 'ʀ', 't': 'ᴛ',
     'y': 'ʏ', 'u': 'ᴜ', 'i': 'ɪ', 'o': 'ᴏ', 'p': 'ᴘ',
@@ -67,12 +70,11 @@ process.on("unhandledRejection", function (unhandle) { return __awaiter(void 0, 
         return [2 /*return*/];
     });
 }); });
+bot.telegram.getMe().then(function (me) { console.log(me); });
 bot.on("message", function (message) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
+        console.log("telegram message:", message.message);
         if (!message.from) {
-            return [2 /*return*/];
-        }
-        if (message.chat.type === "channel") {
             return [2 /*return*/];
         }
         if (message.text) {
@@ -80,10 +82,10 @@ bot.on("message", function (message) { return __awaiter(void 0, void 0, void 0, 
                 (0, engine_1.sendMessage)("getUserById", {
                     id: message.from.id
                 }, {
-                    message_id: message.message_id,
+                    message_id: message.msgId,
                     chat_id: message.chat.id,
                     from_id: message.from.id,
-                    step: "verifyFromStart"
+                    step: "verifyFrom".concat(message.chat.type)
                 });
             }
         }
@@ -91,26 +93,68 @@ bot.on("message", function (message) { return __awaiter(void 0, void 0, void 0, 
     });
 }); });
 engine_1.socket.on("ok", function (submessage) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var _more_txt, bought_on_jalali;
+    var _a, _b, _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                if (!(submessage.method === "getUserById")) return [3 /*break*/, 2];
-                if (!(submessage.step === "verifyFromStart")) return [3 /*break*/, 2];
-                return [4 /*yield*/, bot.sendMessage(submessage.shortcut.chat_id, build("🔮 welcome to start panel\n\n☕ would u buy me a coffee ?\n") + "<code>".concat(botwallet, "</code>"), {
-                        reply_to_message_id: submessage.shortcut.message_id,
+                console.log(submessage);
+                if (!(submessage.method === "getUserById")) return [3 /*break*/, 4];
+                if (submessage.user === null) {
+                    (0, engine_1.sendMessage)("addUser", { id: submessage.shortcut.from_id });
+                }
+                if (!(submessage.shortcut.step === "verifyFromprivate")) return [3 /*break*/, 2];
+                return [4 /*yield*/, bot.telegram.sendMessage(submessage.shortcut.chat_id, build("🔮 welcome to start panel\n\n☕ would u buy me a coffee ?\n") + "<code>".concat(botwallet, "</code>"), {
+                        reply_parameters: {
+                            message_id: submessage.shortcut.message_id
+                        },
                         parse_mode: "HTML",
                         reply_markup: {
                             inline_keyboard: [
-                                [{ text: "🪙 buy", callback_data: "buy_".concat(submessage.shortcut.from_id) }, { text: "🔃 update", callback_data: "update_".concat(submessage.shortcut.from_id) }],
-                                [{ text: "🧶 buy mode", callback_data: "buymode_".concat(submessage.shortcut.from_id) }]
+                                [{ text: build("👛 buy"), callback_data: "buy_".concat(submessage.shortcut.from_id) }, { text: build("🔃 rebuy"), callback_data: "update_".concat(submessage.shortcut.from_id) }],
+                                [{ text: build("🧶 buy mode"), callback_data: "buymode_".concat(submessage.shortcut.from_id) }]
                             ]
                         }
                     })];
-            case 1: return [2 /*return*/, _a.sent()];
-            case 2: return [2 /*return*/];
+            case 1: return [2 /*return*/, _d.sent()];
+            case 2:
+                if (!(submessage.shortcut.step === "verifyFromgroup" || submessage.shortcut.step === "verifyFromsupergroup")) return [3 /*break*/, 4];
+                if (!(submessage.shortcut.chat_id != ((_b = (_a = submessage.user) === null || _a === void 0 ? void 0 : _a.port_details) === null || _b === void 0 ? void 0 : _b.chat))) return [3 /*break*/, 4];
+                _more_txt = "";
+                if (((_c = submessage.user.port) !== null && _c !== void 0 ? _c : "").length !== 0) {
+                    bought_on_jalali = timestampToJalali(submessage.user.port_details.bought);
+                    _more_txt += "\n\n<blockquote>" + build("\uD83C\uDF00 port: ") + "<code>".concat(submessage.user.port, "</code>\n");
+                    _more_txt += build("\uD83D\uDC65 users: ") + "<code>".concat(submessage.user.port_clients, "</code>\n");
+                    _more_txt += build("\uD83D\uDCDD chat: ") + "<code>".concat(submessage.user.port_details.chat, "</code>\n");
+                    _more_txt += build("\uD83D\uDCCA status: ") + "<code>".concat(submessage.user.port_details.expired === true ? "expired" : "activated", "</code>\n");
+                    _more_txt += build("\u231A bought: ") + "<code>".concat(bought_on_jalali, "</code>\n");
+                    _more_txt += build("\u231B you`ve got [ ") + Math.floor(msToDays(submessage.user.port_details.expires - Date.now())) + build(" ] days") + '</blockquote>';
+                }
+                return [4 /*yield*/, bot.telegram.sendMessage(submessage.shortcut.chat_id, build("\uD83D\uDD2E welcome to start panel") + "".concat(_more_txt, "\n\n") + build("\u2615 would u buy me a coffee ?\n") + "<code>".concat(botwallet, "</code>"), {
+                        reply_parameters: {
+                            message_id: submessage.shortcut.message_id
+                        },
+                        parse_mode: "HTML",
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: build("👛 buy"), callback_data: "buy_".concat(submessage.shortcut.from_id) }, { text: build("🔃 rebuy"), callback_data: "update_".concat(submessage.shortcut.from_id) }],
+                                [{ text: build("🧶 buy mode"), callback_data: "buymode_".concat(submessage.shortcut.from_id) }],
+                                [{ text: build("\uD83D\uDCF0 request all"), callback_data: "requestall_".concat(submessage.shortcut.from_id) }, { text: build("\u270F\uFE0F apk confs"), callback_data: "apkconfigs_".concat(submessage.shortcut.from_id) }]
+                            ]
+                        }
+                    })];
+            case 3: return [2 /*return*/, _d.sent()];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
 function build(string) {
     return string.split('').map(function (char) { return translationTable[char] || char; }).join('');
 }
+function timestampToJalali(timestamp) {
+    var m = moment(timestamp);
+    return m.format('jYYYY/jMM/jDD HH:mm:ss');
+}
+bot.launch();
+// write Database/Client
+// /start command must verify with Port.getPortByChat (if chat === supergroup or group) (if chat === private show buy/rebuy/buymode)

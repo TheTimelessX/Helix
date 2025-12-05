@@ -184,7 +184,7 @@ export class PortController {
         chat: number,
         expires: number
     ): Promise<object> {
-
+        await this.ensureConnected();
         const user = await theUserHandler.getUserById(owner);
 
         if (!user){
@@ -215,6 +215,7 @@ export class PortController {
     }
 
     async removePortByOwner(owner: number): Promise<object> { // only for admins
+        await this.ensureConnected();
         const user = await theUserHandler.getUserById(owner);
 
         if (!user){
@@ -237,6 +238,7 @@ export class PortController {
     }
 
     async removePortByName(name: string): Promise<object> { // only for admins
+        await this.ensureConnected();
         const port = await this.getPortByName(name);
 
         if (!port){

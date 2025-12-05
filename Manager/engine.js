@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.socket = void 0;
 exports.sendMessage = sendMessage;
 var socket_io_client_1 = require("socket.io-client");
-var ENGINE_URL = "http://127.0.0.1:5001"; // or your VPS IP
+var ENGINE_URL = "http://127.0.0.1:5001";
 var KEY = "c9f756f78c9f756f78713379b72e02f13683adb798de55a4497b5a1fe99bf2a410e2d29bdbc0c8d51125b38a623655b693884a4610ed68dfac04793d244b37294b2d66655713379b72e02f13683adb798de55a4497c9f756f78713379b72e02f13683adb798de55a4497b5a1fe99bf2a410e2d29bdbc0c8d51125b38a623655b693884a4610ed68dfac04793d244b37294b2d66655b5a1fe99bf2a410e2d29bdbc0c9f756f78713379b72e02f13683adb798de55a4497b5a1fe99bf2a410e2d29bdbc0c8d51125b38a623655b693884a4610ed68dfac04793d244b37294b2d66655c8d51125b38a623655b693884a4610ed68dfac04793d244b37294b2d66655";
 exports.socket = (0, socket_io_client_1.io)(ENGINE_URL, {
     reconnectionAttempts: 5,
@@ -30,9 +30,6 @@ exports.socket.on("connect_error", function (err) {
 exports.socket.on("error", function (data) {
     console.error("Server rejected:", data);
 });
-// socket.on("ok", (data) => {
-//     console.log("Success →", data);
-// });
 function sendMessage(method, payload, shortcut) {
     if (payload === void 0) { payload = {}; }
     if (shortcut === void 0) { shortcut = {}; }
